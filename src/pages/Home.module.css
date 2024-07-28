@@ -1,0 +1,28 @@
+.main{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap:5vh;
+}
+
+.todoSection {
+  display: flex;
+  gap: 5%;
+  padding: 0 3rem;
+  height: auto;
+}
+
+.todoList {
+  width: 55%;
+  height: 100%;
+  min-width: 400px;
+}
+.statusChart {
+  width: 45%;
+  height: 100%;
+  min-width: 300px;
+}
+
+.blogSection {
+  padding: 0 3rem;
+}

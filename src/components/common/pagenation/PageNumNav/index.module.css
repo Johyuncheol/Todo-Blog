@@ -1,0 +1,16 @@
+.numNav {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3%;
+  width: 100%;
+}
+
+.numNav > li {
+  cursor: pointer;
+}
+
+.numNav > li > button {
+  cursor: pointer;
+}

@@ -1,0 +1,10 @@
+
+
+.slideCard{
+    flex-shrink: 0;
+    width: 30%;
+    height: 100%;
+    position: relative;
+    transition-property: transform;
+    display: block;
+}

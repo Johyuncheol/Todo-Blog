@@ -1,6 +1,18 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import { AppProps } from 'next/app';
+import '@/styles/globals.css';
+import SideNav from '@/layouts/SideNav';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <div className="app-container">
+      <aside className="aside">
+        <SideNav />
+      </aside>
+      <main className="main">
+        <Component {...pageProps} />
+      </main>
+    </div>
+  );
 }
+
+export default MyApp;
