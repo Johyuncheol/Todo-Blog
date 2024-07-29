@@ -43,8 +43,7 @@ const ListCard = ({ item, id }: ListCardProps) => {
     if (daysPassed > totalDays) return 100;
     if (daysPassed === 0 && totalDays === daysPassed) return 100;
 
-    if (totalDays - daysPassed < 5) return ((totalDays - daysPassed) / 5) * 100;
-    else return 0;
+    return ((totalDays-daysPassed) / totalDays) * 100;
   };
 
   const [percent, setPercent] = useState(0);
