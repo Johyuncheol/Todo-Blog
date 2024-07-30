@@ -3,18 +3,13 @@ import React, { useRef, useState } from "react";
 import { Virtual, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-// Import Swiper styles
+
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-/* import "./styles.css";
- */
-// Define the types for the Swiper instance
-import { Swiper as SwiperInstance } from "swiper/types";
-
 const PostCarousel: React.FC = () => {
-  // Create array with 500 slides
+
   const [slides, setSlides] = useState<string[]>(
     Array.from({ length: 10 }).map((_, index) => `Slide ${index + 1}`)
   );

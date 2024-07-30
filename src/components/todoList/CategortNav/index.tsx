@@ -7,9 +7,9 @@ import useModal from "@/hooks/useModal";
 import useTodo from "@/hooks/useTodo";
 
 const CategoryNav = () => {
-  const deleteTodoHandler = () => {};
-  const { nowCategory, changeCategoryHandler } = useTodo();
-  const { changeModalState } = useModal();
+  const { nowCategory, changeCategoryHandler, deleteTodoHandler, todos } =
+    useTodo();
+  const { openModalHandler } = useModal();
 
   const categoryData: [string, string][] = [
     ["all", "전체"],
@@ -35,16 +35,18 @@ const CategoryNav = () => {
         })}
 
         <li>
-          <Button fnc={() => deleteTodoHandler()}>+</Button>
+          <Button fnc={() => console.log()}>+</Button>
         </li>
       </ul>
 
       <ul>
         <li>
-          <Button fnc={() => changeModalState()}>추가</Button>
+          <Button fnc={() => openModalHandler({ type: "add" })}>추가</Button>
         </li>
         <li>
-          <Button fnc={deleteTodoHandler}>삭제</Button>
+          <Button fnc={() => deleteTodoHandler(todos.selectedItems)}>
+            삭제
+          </Button>
         </li>
       </ul>
     </nav>

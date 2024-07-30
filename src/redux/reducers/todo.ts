@@ -1,7 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { __addTodos, __getTodos, __deleteTodos } from "../thunks/todoThunks";
 
-interface CounterState {
-  id: number;
+interface todoType {
+  id: string;
   title: string;
   detail: string;
   isDone: boolean;
@@ -9,175 +10,44 @@ interface CounterState {
   startDate: string;
   endDate: string;
 }
-interface TodoDataType {
-  todo: CounterState[];
-  pageNums: number[];
-}
 
-interface TodoDataTypeA {
-  todo: CounterState[];
+interface TodoDataType {
+  todo: todoType[];
   pageNums: number[];
   nowPageNum: number;
   nowCategory: string;
+  selectedItems: string[];
+  isLoading: boolean;
+  isError: boolean;
+  error?: string;
 }
 
-const data: TodoDataType = {
-  todo: [
-    {
-      id: 1,
-      title: "제목1",
-      detail: "detail1",
-      isDone: false,
-      category: "work",
-      startDate: "2024-07-28",
-      endDate: "2024-07-28",
-    },
-    {
-      id: 2,
-      title: "제목2",
-      detail: "detail2",
-      isDone: true,
-      category: "work",
-      startDate: "2024-07-24",
-      endDate: "2024-08-31",
-    },
-    {
-      id: 3,
-      title: "제목3",
-      detail: "detail3",
-      isDone: false,
-      category: "work",
-      startDate: "2024-07-24",
-      endDate: "2024-07-31",
-    },
-    {
-      id: 4,
-      title: "제목4",
-      detail: "detail4",
-      isDone: false,
-      category: "work",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 5,
-      title: "제목5",
-      detail: "detail5",
-      isDone: true,
-      category: "work",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 6,
-      title: "제목6",
-      detail: "detail6",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-29",
-    },
-    {
-      id: 8,
-      title: "제목8",
-      detail: "detail8",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 9,
-      title: "제목9",
-      detail: "detail9",
-      isDone: true,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 10,
-      title: "제목10",
-      detail: "detail10",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 11,
-      title: "제목11",
-      detail: "detail11",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 12,
-      title: "제목12",
-      detail: "detail12",
-      isDone: true,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 13,
-      title: "제목13",
-      detail: "detail13",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-    {
-      id: 14,
-      title: "제목14",
-      detail: "detail14",
-      isDone: false,
-      category: "hobby",
-      startDate: "2024-07-26",
-      endDate: "2024-07-26",
-    },
-  ],
-  pageNums: [1, 2, 3, 4, 5, 6, 7],
-};
-
-const initialState: TodoDataTypeA = {
+const initialState: TodoDataType = {
   todo: [],
   pageNums: [],
   nowPageNum: 1,
   nowCategory: "all",
+  selectedItems: [],
+  isLoading: false,
+  isError: false,
 };
 
 const todoSlice = createSlice({
   name: "todoReducer",
   initialState,
   reducers: {
-    getTodo(state, action) {
-      const showDataNums = 10;
-      const firstDataIndex = (action.payload.nowPageNum - 1) * showDataNums;
-      const lastDataIndex = action.payload.nowPageNum * showDataNums;
-      const Data = data.todo.filter((item: CounterState) => {
-        if (action.payload.nowCategory !== "all")
-          return item.category === action.payload.nowCategory;
-        else return item.category === item.category;
+    selectItem(state, actions) {
+      let data = [...state.selectedItems];
+
+      actions.payload.ids.forEach((item: string) => {
+        if (state.selectedItems.includes(item)) {
+          data = data.filter((element) => element !== item);
+        } else {
+          data.push(item);
+        }
       });
 
-      const DataLength = Data.length;
-      const pageNumsLength =
-        DataLength % showDataNums === 0
-          ? DataLength / showDataNums
-          : DataLength / showDataNums + 1;
-
-      return {
-        ...state,
-        todo: Data.slice(firstDataIndex, lastDataIndex),
-        pageNums: Array.from({ length: pageNumsLength }, (_, i) => i + 1),
-        nowPageNum: action.payload.nowPageNum,
-        nowCategory: action.payload.nowCategory,
-      };
+      state.selectedItems = [...data];
     },
 
     chageTodoState(state, actions) {
@@ -189,8 +59,57 @@ const todoSlice = createSlice({
       }
     },
   },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(__getTodos.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(__getTodos.fulfilled, (state, action) => {
+        state.todo = action.payload.todos;
+        state.pageNums = action.payload.pageNums;
+        state.nowPageNum = action.payload.nowPageNum;
+        state.isLoading = false;
+        state.isError = false;
+      })
+      .addCase(__getTodos.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(__addTodos.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(__addTodos.fulfilled, (state, action) => {
+        state.isLoading = false;
+        alert("추가되었습니다");
+      })
+      .addCase(__addTodos.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(__deleteTodos.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(__deleteTodos.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(__deleteTodos.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.payload as string;
+      });
+  },
 });
 
-export const { getTodo, chageTodoState } = todoSlice.actions;
+export const { chageTodoState, selectItem } = todoSlice.actions;
 
 export default todoSlice.reducer;

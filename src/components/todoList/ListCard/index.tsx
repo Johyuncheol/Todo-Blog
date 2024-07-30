@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import useTodo from "@/hooks/useTodo";
+import useModal from "@/hooks/useModal";
 
 interface ListCardProps {
   item: {
-    id: number;
+    id: string;
     title: string;
     detail: string;
     isDone: boolean;
@@ -12,11 +13,11 @@ interface ListCardProps {
     startDate: string;
     endDate: string;
   };
-  id: number;
 }
 
-const ListCard = ({ item, id }: ListCardProps) => {
-  const { isDoneChangeHandler } = useTodo();
+const ListCard = ({ item }: ListCardProps) => {
+  const { isDoneChangeHandler, selectItemHandler, todos } = useTodo();
+  const { openModalHandler } = useModal();
 
   const getDateDifferenceInDays = (
     startDate: string,
@@ -43,7 +44,7 @@ const ListCard = ({ item, id }: ListCardProps) => {
     if (daysPassed > totalDays) return 100;
     if (daysPassed === 0 && totalDays === daysPassed) return 100;
 
-    return ((totalDays-daysPassed) / totalDays) * 100;
+    return ((totalDays - daysPassed) / totalDays) * 100;
   };
 
   const [percent, setPercent] = useState(0);
@@ -65,16 +66,20 @@ const ListCard = ({ item, id }: ListCardProps) => {
       <input
         className={styles.isDoneCheck}
         type="checkbox"
-        checked={item.isDone}
-        onChange={(e) => isDoneChangeHandler(e, id)}
+        checked={todos.selectedItems.includes(item.id)}
+        onChange={() => selectItemHandler([item.id])}
       />
       <ul
         className={`${styles.todoCard} ${item.isDone ? styles.done : ""}`}
         style={progressStyle}
+        onClick={() => openModalHandler({ type: "detail", id: item.id })}
       >
         <li className={styles.title}>{item.title}</li>
         <li className={styles.detail}>{item.detail}</li>
       </ul>
+      <button onClick={() => isDoneChangeHandler(item.id, !item.isDone)}>
+        {item.isDone ? "취소" : "완료"}
+      </button>
     </div>
   );
 };
