@@ -38,10 +38,10 @@ const SideNav = () => {
         })}
         <div className={styles.empty}></div>
         <form
-          action={async () => {
-            /*   "use server"; */
-            /*  await signOut(); */
-          }}
+/*           action={async () => {
+              "use server";
+             await signOut();
+          }} */
         >
           <Button fnc={() => signOut()}>
             <div className="hidden md:block">Sign Out</div>
